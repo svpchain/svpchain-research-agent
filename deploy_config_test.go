@@ -72,3 +72,59 @@ func TestDeployScriptConfigParses(t *testing.T) {
 		})
 	}
 }
+
+// The route and the card must agree. An agent advertises public_url inside its
+// Agent Card, a verifier fetches that URL to recompute the capability hash, and
+// nginx is what makes the URL resolve. If the location block and public_url
+// disagree on the path segment, the agent advertises a URL that 404s and reads
+// as unverified — with every process healthy and nothing in the logs.
+//
+// Both come from the same two shell functions, so this asserts they stay wired
+// to them rather than to two hand-maintained copies of the same fact.
+func TestDeployScriptNginxRouteMatchesConfig(t *testing.T) {
+	script, err := filepath.Abs(filepath.Join("scripts", "deploy.sh"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := os.Stat(script); err != nil {
+		t.Skipf("deploy script not found: %v", err)
+	}
+
+	const base = "https://agents.example.com"
+	run := func(mode string) string {
+		out, err := exec.Command("bash", script, mode, "--host", "www@agent.example.com",
+			"--public-url", base).Output()
+		if err != nil {
+			t.Fatalf("%s: %v", mode, err)
+		}
+		return string(out)
+	}
+
+	path := filepath.Join(t.TempDir(), "agent.toml")
+	if err := os.WriteFile(path, []byte(run("--print-config")), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	cfg, err := config.Load(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	wantSeg := strings.TrimPrefix(cfg.PublicURL, base) // "/perps"
+	if wantSeg == "" || wantSeg == cfg.PublicURL {
+		t.Fatalf("public_url %q does not extend the base %q with a path segment", cfg.PublicURL, base)
+	}
+	wantPort := cfg.ListenAddr[strings.LastIndex(cfg.ListenAddr, ":"):] // ":8082"
+
+	nginx := run("--print-nginx")
+	if want := "location " + wantSeg + "/ {"; !strings.Contains(nginx, want) {
+		t.Errorf("nginx block does not route the advertised path.\nwant %q\ngot:\n%s", want, nginx)
+	}
+	if want := "proxy_pass http://127.0.0.1" + wantPort + "/;"; !strings.Contains(nginx, want) {
+		t.Errorf("nginx block does not proxy to the configured port.\nwant %q\ngot:\n%s", want, nginx)
+	}
+	// Without the trailing slash on proxy_pass the prefix is forwarded, and the
+	// agent — which binds at root — 404s every request through the proxy.
+	if strings.Contains(nginx, "proxy_pass http://127.0.0.1"+wantPort+";") {
+		t.Error("proxy_pass must end in / so the path segment is stripped")
+	}
+}

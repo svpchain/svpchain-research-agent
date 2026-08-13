@@ -49,6 +49,32 @@ publishes a hash of this binary's own card.
   --public-url https://agents.svpchain.org
 ```
 
+Inspect without touching anything: `--print-config`, `--print-compose`,
+`--print-nginx`, `--dry-run`. Tear down with `--uninstall`.
+
+## Behind the reverse proxy
+
+The agents share one host, each on its own path: this one answers at
+`<base>/research` and listens on `127.0.0.1:8081`. Print its location block:
+
+```sh
+./scripts/deploy.sh --public-url https://agents.svpchain.org --print-nginx
+```
+
+Nothing installs it. The server block it belongs in owns TLS and the base
+host, both shared with agents this repo must not know about — so paste it,
+then `nginx -t && systemctl reload nginx`.
+
+The route is not cosmetic. `public_url` is advertised inside the Agent Card,
+and a verifier fetches that URL to recompute the capability hash; if nginx
+does not route `/research` to this port the agent advertises a URL that 404s
+and reads as unverified, with every process healthy and nothing in the logs.
+`TestDeployScriptNginxRouteMatchesConfig` pins the two together.
+
+This agent has a second reason to care: it re-delegates to a downstream agent
+by that agent's public URL, so a broken route breaks the hop, not just the
+lookup.
+
 ## Development
 
 `GOWORK=off` is set in every Makefile target; see the note in the sibling agent
