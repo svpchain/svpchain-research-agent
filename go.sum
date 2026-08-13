@@ -1616,6 +1616,8 @@ github.com/svpchain/cosmos-sdk/store v1.0.3-0.20260526234433-5f3ec252bccc h1:CTx
 github.com/svpchain/cosmos-sdk/store v1.0.3-0.20260526234433-5f3ec252bccc/go.mod h1:zMcD3hfNwd0WMTpdRUhS3QxoCoEtBXWeoKsu3iaLBbQ=
 github.com/svpchain/evm v1.0.0-rc2.0.20260414142633-8d28e31fb1fc h1:PIdAhPze0aEFGOmtONaREo/KiYCGu0wrgVXyx6vM9Go=
 github.com/svpchain/evm v1.0.0-rc2.0.20260414142633-8d28e31fb1fc/go.mod h1:NfEGOdIuNDiUXXiMb/a7kRQhEYIZulXEyDjACwBAca8=
+github.com/svpchain/svpchain-agent-core v0.2.0 h1:e8k6Nf5jiWbGfKbU6BUQEfwF272S5hrMkcNDiNNmp5g=
+github.com/svpchain/svpchain-agent-core v0.2.0/go.mod h1:EwresOvnaxhii9ICuzDLJ/JcAA6iHDOmy1YD+svX0u4=
 github.com/svpchain/svpchain-mcp v0.1.0 h1:0pLUihyNvLy4eK/u30xh0KXcVdjoDF6sjoOs8hN6vCI=
 github.com/svpchain/svpchain-mcp v0.1.0/go.mod h1:Am+vVVRLaPFRssWl3B31aBucHZHbKYrJXSDd7DSorxU=
 github.com/svpchain/svpdt v0.2.0 h1:fJsxJKyK028M/e9WpdYWy/oppNwsM1GCCBBOrXadWwY=
