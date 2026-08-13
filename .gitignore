@@ -1,0 +1,10 @@
+/build/
+*.out
+.DS_Store
+/vendor/
+
+# `go build ./cmd/<name>` (no -o) drops a 50-150MB binary in the repo root.
+/svpchain-research-agent
+
+# Operator key material. Never committed.
+*.key

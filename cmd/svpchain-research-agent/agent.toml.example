@@ -1,0 +1,25 @@
+# svpchain-research-agent configuration.
+#
+# This agent takes its listen address and advertised URL as FLAGS
+# (-listen, -public-url), not from this file — everything here is the chain
+# access and the operator identity it verifies and signs with.
+
+[dex_chain]
+id               = "svpchain-testnet-1"
+grpc_addr        = "127.0.0.1:9090"
+comet_rpc_url    = "http://127.0.0.1:26657"
+indexer_base_url = "http://127.0.0.1:3002"
+
+# Optional: run the agent-identity families against a separate agent chain
+# over its Cosmos REST API.
+#[agent_chain]
+#id       = "svpagent-testnet-1"
+#rest_url = "http://127.0.0.1:1317"
+
+# REQUIRED for this agent. It signs the credentials it re-delegates, so it
+# cannot run keyless. Use a key distinct from every other agent's; the
+# SVPCHAIN_AGENT_OPERATOR_KEY env var takes precedence over key_file.
+[operator]
+key_file     = "operator.key"
+capabilities = ["research", "delegation.redelegate"]
+metadata     = "svpchain research (intermediary) agent"
