@@ -49,8 +49,19 @@ publishes a hash of this binary's own card.
   --public-url https://agents.svpchain.org
 ```
 
+`--operator-key-file` is required, not optional: this agent signs the
+credentials it re-delegates, so the deploy refuses without one rather than
+installing a container that exits on boot.
+
 Inspect without touching anything: `--print-config`, `--print-compose`,
 `--print-nginx`, `--dry-run`. Tear down with `--uninstall`.
+
+`--help` lists every flag. There are few: `wire.DelegationProfile` registers no
+operation families, so the rendered config is chain access plus the operator
+identity — no faucet, limits, cache or EVM options. Note the binary takes its
+listen address and advertised URL as `-listen` / `-public-url` flags, which the
+generated `docker-compose.yml` passes; `agent.toml` carries them only because
+core's schema asks for them.
 
 ## Behind the reverse proxy
 

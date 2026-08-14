@@ -40,12 +40,15 @@ func TestDeployScriptConfigParses(t *testing.T) {
 			"--operator-key-file", keyFile,
 			"--public-url", "https://agents.example.com",
 		},
-		"families-off": {
+		// The one optional block this profile still renders. Everything else
+		// the shared schema offers — faucet, limits, cache, the whole EVM
+		// surface — is gone, because wire.DelegationProfile registers no
+		// operation families and builds no EVM or markets deps.
+		"agent-chain": {
 			"--print-config", "--host", "www@agent.example.com",
-			"--evm-rpc", "", "--faucet-url", "",
-			"--evm-uniswap-router", "", "--evm-wsvp", "", "--evm-oracle", "",
-			"--evm-lendora-comptroller", "", "--evm-bridge-routes", "",
-			"--evm-foreign-chains", "",
+			"--operator-key-file", keyFile,
+			"--agent-chain-id", "svp-agent-1",
+			"--agent-chain-rest", "http://127.0.0.1:1317",
 		},
 	}
 
@@ -69,7 +72,35 @@ func TestDeployScriptConfigParses(t *testing.T) {
 			if name == "keyed" && cfg.Operator.KeyFile == "" {
 				t.Error("keyed variant must set key_file")
 			}
+			if name == "agent-chain" && cfg.AgentChain.RestURL == "" {
+				t.Error("agent-chain variant must render [agent_chain]")
+			}
 		})
+	}
+}
+
+// An intermediary signs the credentials it re-delegates, so main.go refuses to
+// start without an operator key. The deploy must refuse for the same reason and
+// at the same strength: the multi-agent script this one replaced treated a
+// keyless research agent as "skip it", which shipped an empty compose file and
+// then reported a successful deploy that had installed nothing.
+func TestDeployRefusesWithoutOperatorKey(t *testing.T) {
+	script, err := filepath.Abs(filepath.Join("scripts", "deploy.sh"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := os.Stat(script); err != nil {
+		t.Skipf("deploy script not found: %v", err)
+	}
+
+	// --dry-run so this reaches the argument checks without touching docker,
+	// ssh, or the network.
+	out, err := exec.Command("bash", script, "--dry-run", "--host", "www@agent.example.com").CombinedOutput()
+	if err == nil {
+		t.Fatalf("keyless deploy succeeded; it must refuse:\n%s", out)
+	}
+	if !strings.Contains(string(out), "--operator-key-file is required") {
+		t.Errorf("refusal does not name the missing flag:\n%s", out)
 	}
 }
 
@@ -79,8 +110,8 @@ func TestDeployScriptConfigParses(t *testing.T) {
 // disagree on the path segment, the agent advertises a URL that 404s and reads
 // as unverified — with every process healthy and nothing in the logs.
 //
-// Both come from the same two shell functions, so this asserts they stay wired
-// to them rather than to two hand-maintained copies of the same fact.
+// Both come from the same two constants, AGENT_PORT and AGENT_SEGMENT, so this
+// asserts they stay wired to them rather than to two hand-maintained copies.
 func TestDeployScriptNginxRouteMatchesConfig(t *testing.T) {
 	script, err := filepath.Abs(filepath.Join("scripts", "deploy.sh"))
 	if err != nil {
