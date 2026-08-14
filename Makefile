@@ -11,9 +11,9 @@ ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=svpchain \
 
 BUILD_FLAGS := -ldflags '$(ldflags)'
 
-# GOWORK=off everywhere: a go.work in the parent directory makes this module
-# resolve svpchain-agent-core from the local checkout, which hides a missing
-# version bump and would ship against a core revision that was never tagged.
+# GOWORK=off everywhere: a go.work in the parent directory would resolve this
+# module's dependencies from sibling checkouts instead of the versions go.mod
+# pins, so a build could ship against a revision no tag points at.
 GO := GOWORK=off go
 
 .PHONY: build test vet fmt vendor docker deploy clean

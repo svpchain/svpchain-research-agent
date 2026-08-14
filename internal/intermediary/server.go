@@ -14,7 +14,7 @@ import (
 	"github.com/a2aproject/a2a-go/v2/a2a"
 	"github.com/a2aproject/a2a-go/v2/a2asrv"
 
-	"github.com/svpchain/svpchain-agent-core/agentchain"
+	"github.com/svpchain/svpchain-research-agent/internal/agentchain"
 )
 
 // The A2A face of the example agent. Deliberately minimal: one skill, one

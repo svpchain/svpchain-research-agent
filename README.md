@@ -17,11 +17,10 @@ for the credential flow in detail.
 | Image | `ghcr.io/svpchain/svpchain-research-agent` |
 | Downstream | any agent the credential's `redelegate_to` allows — typically the perps agent |
 
-The credential handling is reused from
-[`svpchain-agent-core`](https://github.com/svpchain/svpchain-agent-core) rather
-than reimplemented: the same verifier, resolver, and settlement recorder the
-other agents use. `internal/intermediary` is this repo's own — the
-re-delegation role is this agent's product, not shared library surface.
+The credential handling is not reimplemented: the same verifier, resolver, and
+settlement recorder the other agents use now live under `internal/`, vendored in
+from the retired `svpchain-agent-core`. `internal/intermediary` is this agent's
+own — the re-delegation role is its product, not shared plumbing.
 
 ## Running
 
@@ -90,4 +89,12 @@ lookup.
 
 `GOWORK=off` is set in every Makefile target; see the note in the sibling agent
 repos. The build needs the chain's protocol module at `../svpagent/protocol`,
-and `deps_test.go` asserts this repo's replace directives still match core's.
+and because Go does not apply a dependency's own `replace` directives, this
+`go.mod` must restate every one of protocol's verbatim. `deps_test.go` diffs the
+two on every `go test ./...`.
+
+`internal/` is the former `svpchain-agent-core`, vendored in when that repo was
+retired and pruned hard: this agent serves no operation registry, so the A2A
+server and market-data layers are gone entirely, along with the EVM and Lendora
+surfaces. What remains is the credential engine, the agent-chain clients, and
+the config and operator plumbing that produce `app.Delegated`.

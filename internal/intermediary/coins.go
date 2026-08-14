@@ -9,7 +9,7 @@ import (
 
 	"github.com/svpchain/svpdt"
 
-	"github.com/svpchain/svpchain-agent-core/agentchain"
+	"github.com/svpchain/svpchain-research-agent/internal/agentchain"
 )
 
 func nowUnix() int64 { return time.Now().Unix() }

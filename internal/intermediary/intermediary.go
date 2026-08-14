@@ -24,8 +24,8 @@ import (
 
 	"github.com/svpchain/svpdt"
 
-	"github.com/svpchain/svpchain-agent-core/agentchain"
-	"github.com/svpchain/svpchain-agent-core/delegated"
+	"github.com/svpchain/svpchain-research-agent/internal/agentchain"
+	"github.com/svpchain/svpchain-research-agent/internal/delegated"
 )
 
 // Config wires a Service.
@@ -131,8 +131,8 @@ type ForwardInput struct {
 
 // NarrowSpec is the child's requested grant, as a narrowing of the parent's.
 type NarrowSpec struct {
-	Actions     []string `json:"actions,omitempty"`
-	Subaccounts []uint32 `json:"subaccounts,omitempty"`
+	Actions     []string         `json:"actions,omitempty"`
+	Subaccounts []uint32         `json:"subaccounts,omitempty"`
 	Budget      *agentchain.Coin `json:"budget,omitempty"`
 	SvcBudget   *agentchain.Coin `json:"svc_budget,omitempty"`
 	// TTLSeconds shortens the child's life from now. Zero inherits the

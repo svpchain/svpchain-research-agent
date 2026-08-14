@@ -8,38 +8,50 @@ import (
 	"testing"
 )
 
-// ★ The worst cost of splitting the agents into their own repos: the go.mod
-// replace directives that pin the chain's protocol module now exist in five
-// copies instead of one. They must all track ../svpagent/protocol, and drift
-// does not fail cleanly — the build silently resolves upstream cosmos and dies
-// somewhere unrelated-looking.
+// ★ This module depends on the chain's protocol module, which is a Cosmos chain
+// carrying its own forks of cosmos-sdk, cometbft, cosmos/evm and iavl. Go does
+// not apply a dependency's replace directives, so ours must restate every one of
+// protocol's verbatim — and drift does not fail cleanly. The build silently
+// resolves upstream cosmos and dies somewhere unrelated-looking.
 //
-// So compare against core's go.mod on every `go test ./...`, rather than
-// trusting five copies to be maintained by hand. Core's go.mod is the single
-// source of truth; a separate checked-in copy of the blocks would just be a
-// sixth thing that can drift.
-func TestReplaceBlocksMatchCore(t *testing.T) {
-	coreDir := moduleDir(t, "github.com/svpchain/svpchain-agent-core")
-	core := replaceLines(t, filepath.Join(coreDir, "go.mod"))
+// So diff against protocol's go.mod on every `go test ./...` rather than
+// trusting a hand-maintained copy. protocol is the single source of truth; a
+// checked-in copy of the blocks would just be a second thing that can drift.
+//
+// This used to compare against svpchain-agent-core, back when five agent repos
+// each held a copy. Core is now vendored into internal/ and gone as a module —
+// and comparing against it was always weaker than this, because core held the
+// same hand-copied blocks. It was a mirror checking itself.
+func TestReplaceBlocksMatchProtocol(t *testing.T) {
+	const protocolModule = "github.com/dydxprotocol/v4-chain/protocol"
+
+	protocolDir := moduleDir(t, protocolModule)
+	upstream := replaceLines(t, filepath.Join(protocolDir, "go.mod"))
 	ours := replaceLines(t, "go.mod")
 
-	// Our own replace of core itself is local scaffolding, not an inherited
-	// pin; it is expected to differ and to disappear once core is published.
-	delete(ours, "github.com/svpchain/svpchain-agent-core")
+	// A parse that silently yields nothing would make every assertion below
+	// vacuous, which is the exact failure this test was rewritten to escape.
+	if len(upstream) == 0 {
+		t.Fatalf("parsed no replace directives from %s/go.mod", protocolDir)
+	}
 
-	for path, target := range core {
+	// Our replace of protocol itself is what points at the sibling checkout,
+	// not an inherited pin; protocol obviously does not replace itself.
+	delete(ours, protocolModule)
+
+	for path, target := range upstream {
 		got, ok := ours[path]
 		if !ok {
-			t.Errorf("go.mod is missing core's replace for %s => %s", path, target)
+			t.Errorf("go.mod is missing protocol's replace for %s => %s", path, target)
 			continue
 		}
 		if got != target {
-			t.Errorf("replace for %s is %q, core has %q", path, got, target)
+			t.Errorf("replace for %s is %q, protocol has %q", path, got, target)
 		}
 	}
 	for path := range ours {
-		if _, ok := core[path]; !ok {
-			t.Errorf("go.mod replaces %s, which core does not — it will resolve differently here", path)
+		if _, ok := upstream[path]; !ok {
+			t.Errorf("go.mod replaces %s, which protocol does not — it will resolve differently here", path)
 		}
 	}
 }
@@ -55,17 +67,24 @@ func TestSvpdtIsNeverReplaced(t *testing.T) {
 	}
 }
 
-// moduleDir asks the go tool where a required module resolves on disk, so this
-// works both with the local replace and with a published, tagged core.
+// moduleDir asks the go tool where a required module resolves on disk.
+//
+// -mod=mod is load-bearing, not tidiness. `make vendor` and scripts/deploy.sh
+// both materialize ./vendor, and under a vendored build `go list -m` reports an
+// empty Dir for every module — so without it this whole test silently skipped
+// on any tree that had ever been vendored, which is most of them. That is the
+// exact failure this test was rewritten to escape, so it fails rather than
+// skips: the caller asks for a module this go.mod replaces with a sibling
+// checkout, and an unresolvable answer means the tree is broken.
 func moduleDir(t *testing.T, module string) string {
 	t.Helper()
-	out, err := exec.Command("go", "list", "-m", "-f", "{{.Dir}}", module).Output()
+	out, err := exec.Command("go", "list", "-mod=mod", "-m", "-f", "{{.Dir}}", module).Output()
 	if err != nil {
-		t.Skipf("cannot locate %s (module not resolvable here): %v", module, err)
+		t.Fatalf("cannot locate %s: %v", module, err)
 	}
 	dir := strings.TrimSpace(string(out))
 	if dir == "" {
-		t.Skipf("%s resolved to an empty directory", module)
+		t.Fatalf("%s resolved to an empty directory", module)
 	}
 	return dir
 }

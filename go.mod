@@ -3,11 +3,15 @@ module github.com/svpchain/svpchain-research-agent
 go 1.25.0
 
 require (
+	cosmossdk.io/log v1.6.1
+	cosmossdk.io/math v1.5.3
+	github.com/BurntSushi/toml v1.4.1-0.20240526193622-a339e1f7089c
 	github.com/a2aproject/a2a-go/v2 v2.3.1
 	github.com/cosmos/cosmos-sdk v0.50.11
 	github.com/cosmos/evm v0.0.0-00010101000000-000000000000
+	github.com/cosmos/gogoproto v1.7.2
 	github.com/dydxprotocol/v4-chain/protocol v0.0.0-00010101000000-000000000000
-	github.com/svpchain/svpchain-agent-core v0.2.0
+	github.com/modelcontextprotocol/go-sdk v1.0.0
 	github.com/svpchain/svpchain-mcp v0.1.0
 	github.com/svpchain/svpdt v0.2.0
 	google.golang.org/grpc v1.80.0
@@ -27,8 +31,6 @@ require (
 	cosmossdk.io/core v0.12.0 // indirect
 	cosmossdk.io/depinject v1.2.1 // indirect
 	cosmossdk.io/errors v1.0.2 // indirect
-	cosmossdk.io/log v1.6.1 // indirect
-	cosmossdk.io/math v1.5.3 // indirect
 	cosmossdk.io/store v1.1.2 // indirect
 	cosmossdk.io/x/evidence v0.1.0 // indirect
 	cosmossdk.io/x/feegrant v0.1.0 // indirect
@@ -37,7 +39,6 @@ require (
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4 // indirect
 	github.com/99designs/keyring v1.2.2 // indirect
-	github.com/BurntSushi/toml v1.4.1-0.20240526193622-a339e1f7089c // indirect
 	github.com/DataDog/datadog-go v4.8.3+incompatible // indirect
 	github.com/DataDog/zstd v1.5.7 // indirect
 	github.com/GeertJohan/go.rice v1.0.3 // indirect
@@ -84,7 +85,6 @@ require (
 	github.com/cosmos/cosmos-proto v1.0.0-beta.5 // indirect
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/gogogateway v1.2.0 // indirect
-	github.com/cosmos/gogoproto v1.7.2 // indirect
 	github.com/cosmos/iavl v1.2.2 // indirect
 	github.com/cosmos/ibc-go/modules/capability v1.0.1 // indirect
 	github.com/cosmos/ibc-go/v8 v8.5.1 // indirect
@@ -206,7 +206,6 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/go-testing-interface v1.14.1 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/modelcontextprotocol/go-sdk v1.0.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/mostynb/zstdpool-freelist v0.0.0-20201229113212-927304c0c3b1 // indirect
@@ -338,7 +337,7 @@ replace (
 	cosmossdk.io/collections => cosmossdk.io/collections v0.4.0
 	cosmossdk.io/core => cosmossdk.io/core v0.11.0
 	cosmossdk.io/store => github.com/svpchain/cosmos-sdk/store v1.0.3-0.20260526234433-5f3ec252bccc
-	github.com/cometbft/cometbft => github.com/dydxprotocol/cometbft v0.38.6-0.20260126154011-467083c7ba0b
+	github.com/cometbft/cometbft => github.com/svpchain/cometbft v0.0.0-20260807070709-f2ff136d7622
 	github.com/cosmos/cosmos-sdk => github.com/svpchain/cosmos-sdk v0.50.6-0.20260709121000-9dd5d3be3e00
 	github.com/cosmos/iavl => github.com/dydxprotocol/iavl v1.1.1-0.20240509161911-1c8b8e787e85
 )

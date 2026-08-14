@@ -10,8 +10,8 @@ import (
 
 	"github.com/svpchain/svpdt"
 
-	"github.com/svpchain/svpchain-agent-core/agentchain"
-	"github.com/svpchain/svpchain-agent-core/delegated"
+	"github.com/svpchain/svpchain-research-agent/internal/agentchain"
+	"github.com/svpchain/svpchain-research-agent/internal/delegated"
 )
 
 const (

@@ -220,7 +220,7 @@ EOF
   fi
   # This agent's identity, not an optional extra: it signs every credential it
   # re-delegates, and its agent id derives from this key. key_file is left
-  # relative ("operator.key") on purpose — svpchain-agent-core/config resolves
+  # relative ("operator.key") on purpose — internal/config resolves
   # it against the agent.toml directory, so it points at the file mounted
   # beside the config. Only --print-config can reach here without a key; the
   # install path refuses earlier.

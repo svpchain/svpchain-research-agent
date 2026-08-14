@@ -24,10 +24,10 @@ import (
 
 	"github.com/svpchain/svpdt"
 
-	"github.com/svpchain/svpchain-agent-core/config"
+	"github.com/svpchain/svpchain-research-agent/internal/config"
 	"github.com/svpchain/svpchain-research-agent/internal/intermediary"
-	"github.com/svpchain/svpchain-agent-core/operator"
-	"github.com/svpchain/svpchain-agent-core/wire"
+	"github.com/svpchain/svpchain-research-agent/internal/operator"
+	"github.com/svpchain/svpchain-research-agent/internal/wire"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	agenttypes "github.com/dydxprotocol/v4-chain/protocol/x/agent/types"

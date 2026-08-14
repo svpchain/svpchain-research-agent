@@ -16,10 +16,11 @@ import (
 	agenttypes "github.com/dydxprotocol/v4-chain/protocol/x/agent/types"
 	wallettypes "github.com/dydxprotocol/v4-chain/protocol/x/agentwallet/types"
 
-	"github.com/svpchain/svpchain-agent-core/agentchain"
-	"github.com/svpchain/svpchain-agent-core/delegated"
 	"github.com/svpchain/svpchain-mcp/lib/mcp/policy"
 	"github.com/svpchain/svpchain-mcp/lib/mcp/signer"
+
+	"github.com/svpchain/svpchain-research-agent/internal/agentchain"
+	"github.com/svpchain/svpchain-research-agent/internal/delegated"
 )
 
 // The end-to-end claim this whole package exists for: a chain the
